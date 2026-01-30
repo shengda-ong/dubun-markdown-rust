@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dubun Markdown Editor</title>
+  <script type="module" src="/main.js" defer></script>
+</head>
+
+<body>
+  <!-- App Container -->
+  <main class="app-container">
+
+    <!-- VIEW: WELCOME (Initial State) -->
+    <section id="view-welcome" class="view">
+      <div class="welcome-card">
+        <img src="assets/dubun_logo.svg" class="logo" alt="Dubun Logo" />
+        <h1 class="slogan">The Markdown experience<br>you actually deserve.</h1>
+        <p class="subtext">Minimalist. Powerful. Yours.</p>
+      </div>
+    </section>
+
+    <!-- VIEW: EDITOR (Hidden by default) -->
+    <section id="view-editor" class="view hidden">
+      <header class="editor-header">
+        <h2>Untitled Document</h2>
+      </header>
+      <div class="editor-content">
+        <h1>Welcome to the Editor</h1>
+        <p>Start typing here...</p>
+      </div>
+    </section>
+
+  </main>
+</body>
+
+</html>
