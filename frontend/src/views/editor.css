@@ -1,0 +1,15 @@
+#view-editor {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-header {
+    border-bottom: 1px solid var(--bg-accent);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.editor-content {
+    color: var(--text-secondary);
+}
