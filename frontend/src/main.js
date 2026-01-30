@@ -1,8 +1,9 @@
 import { initDebugLogger } from './utils/debugLogger.js';
 import { loadView } from './utils/viewLoader.js';
+import { cleanEditorContent } from './utils/editorUtils.js';
 
 // Uncomment to enable on-screen debugging
-initDebugLogger();
+// initDebugLogger();
 
 // Safely try to access Tauri internals
 let invoke;
@@ -47,6 +48,9 @@ async function initApp() {
 
 async function startApp() {
   console.log("Starting session...");
+
+  // Fix: Remove leading whitespace text nodes in editor content
+  cleanEditorContent();
 
   if (welcomeView && editorView) {
     welcomeView.classList.add("hidden");

@@ -1,9 +1,59 @@
 <section id="view-editor" class="view hidden">
-    <header class="editor-header">
-        <h2>Untitled Document</h2>
+    <!-- Header: Breadcrumbs (Location Context) -->
+    <header class="app-header">
+        <div class="breadcrumbs">
+            <span class="crumb">Documents</span>
+            <span class="separator">/</span>
+            <span class="crumb">Projects</span>
+            <span class="separator">/</span>
+            <span class="crumb active">Draft.md</span>
+        </div>
     </header>
-    <div class="editor-content">
-        <h1>Welcome to the Editor</h1>
-        <p>Start typing here...</p>
-    </div>
+
+    <!-- Main Workspace: 3-Column Layout -->
+    <main class="workspace-grid">
+        <!-- Left Sidebar: Library -->
+        <aside class="sidebar-left">
+            <div class="sidebar-header">LIBRARY</div>
+            <div class="file-tree">
+                <div class="tree-item active">Draft.md</div>
+                <div class="tree-item">Notes.md</div>
+            </div>
+        </aside>
+
+        <!-- Center Pane: Toolbar + Editor -->
+        <div class="center-pane">
+            <!-- Toolbar -->
+            <section class="toolbar-container">
+                <div class="toolbar">
+                    <button class="tool-btn" title="Bold"><b>B</b></button>
+                    <button class="tool-btn" title="Italic"><i>I</i></button>
+                    <button class="tool-btn" title="Code">`</button>
+                    <span class="toolbar-separator">|</span>
+                    <button class="tool-btn" title="List">•-</button>
+                    <button class="tool-btn" title="Header">H</button>
+                </div>
+            </section>
+
+            <!-- Editor Canvas -->
+            <section class="editor-canvas">
+                <div class="editor-container">
+                    <!-- Using contenteditable for Phase 1 basic entry -->
+                    <div class="editor-content" contenteditable="true">
+                        <h1>Welcome to the Architect Layout</h1>
+                        <p>This is the start of your <b>new editing experience</b>.</p>
+                        <p>Type here to test the layout...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Sidebar: Outline -->
+        <aside class="sidebar-right">
+            <div class="sidebar-header">OUTLINE</div>
+            <div class="outline-tree">
+                <div class="outline-item">Welcome</div>
+            </div>
+        </aside>
+    </main>
 </section>
