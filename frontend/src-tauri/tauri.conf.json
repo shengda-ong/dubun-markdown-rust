@@ -13,7 +13,7 @@
         "title": "Dubun Markdown Editor",
         "width": 1024,
         "height": 768,
-        "fullscreen": true,
+        "fullscreen": false,
         "resizable": true,
         "maximized": true
       }

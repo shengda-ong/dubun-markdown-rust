@@ -26,5 +26,5 @@ window.addEventListener("DOMContentLoaded", () => {
   // Auto-transition after 3 seconds
   setTimeout(() => {
     startApp();
-  }, 10000);
+  }, 3000);
 });
