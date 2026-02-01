@@ -2,31 +2,41 @@ import { initDebugLogger } from './utils/debugLogger.js';
 import { loadView } from './utils/viewLoader.js';
 import { cleanEditorContent } from './utils/editorUtils.js';
 
+
 // Uncomment to enable on-screen debugging
 // initDebugLogger();
 
 // Safely try to access Tauri internals
 let invoke;
-try {
+let appWindow;
+
+async function initTauri() {
   if (window.__TAURI__) {
+    // Wait for the window object to be available if needed, though usually it is if __TAURI__ is there
+    appWindow = window.__TAURI__.window.getCurrentWindow();
     invoke = window.__TAURI__.core.invoke;
   } else {
     console.warn("Tauri API not found. Running in browser mode?");
   }
-} catch (e) {
-  console.error("Error accessing Tauri API:", e);
 }
 
 let welcomeView;
 let editorView;
 
 async function initApp() {
-  console.log("Initializing app...");
   const appContainer = document.getElementById("app-container");
+
+  // Initialize Tauri globals here, safely
+  await initTauri();
 
   try {
     welcomeView = await loadView("welcome");
     editorView = await loadView("editor");
+
+    // FIX: white flash for some OS WebView Initialization Lag
+    if (appWindow) {
+      await appWindow.show();
+    }
 
     // Clear the loading text (only after success)
     const loader = appContainer.querySelector("h1");
@@ -37,6 +47,11 @@ async function initApp() {
       startApp();
     }, 3000);
   } catch (error) {
+
+    // FIX: white flash for some OS WebView Initialization Lag
+    if (appWindow) {
+      await appWindow.show();
+    }
     console.error("Failed to load views:", error);
 
     // Put the error on screen for the user

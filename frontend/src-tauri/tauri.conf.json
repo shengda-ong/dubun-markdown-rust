@@ -10,12 +10,14 @@
     "withGlobalTauri": true,
     "windows": [
       {
+        "label": "main",
         "title": "Dubun Markdown Editor",
         "width": 1024,
         "height": 768,
         "fullscreen": false,
         "resizable": true,
-        "maximized": true
+        "maximized": true,
+        "visible": false
       }
     ],
     "security": {
