@@ -1,0 +1,83 @@
+/* Block Editor Styles */
+.block-wrapper {
+    position: relative;
+    margin-bottom: 4px;
+    /* Grid/Flex gap */
+    padding: 2px 4px;
+    /* Gap between border and content box */
+    border-radius: 4px;
+    border: 1px solid transparent;
+    /* Hidden by default */
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.block-wrapper.focused {
+    border-color: rgba(255, 255, 255, 0.2);
+    /* Visible only when focused */
+    background-color: rgba(255, 255, 255, 0.02);
+    /* Slight highlight */
+}
+
+.block-wrapper:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Slight highlight on hover */
+}
+
+/* Edit Mode */
+.block-editor {
+    box-sizing: border-box;
+    width: 100%;
+    outline: none;
+    font-family: 'Consolas', 'Monaco', monospace;
+    /* Monospace for editing */
+    font-size: 1rem;
+    line-height: 1.6;
+    color: inherit;
+    /* Inherit color for Dark Mode compatibility */
+    min-height: 1.6em;
+    /* Ensure valid height for empty blocks */
+    white-space: pre-wrap;
+    /* preserve whitespace */
+    padding: 4px 8px;
+    /* Internal padding for text */
+}
+
+/* Preview Mode */
+.block-preview {
+    min-height: 1.6em;
+    cursor: text;
+    line-height: 1.6;
+    outline: none;
+    /* Reset default */
+    padding: 4px 8px;
+    /* Match editor padding for consistency */
+}
+
+.block-preview:focus {
+    box-shadow: 0 0 0 2px #6366f1;
+    /* Accent color ring */
+    border-radius: 4px;
+}
+
+/* Placeholder for empty blocks */
+.block-preview:empty::before {
+    content: 'Type / for commands';
+    color: #666;
+    font-style: italic;
+    opacity: 0.6;
+}
+
+.block-type-heading h1 {
+    font-size: 2em;
+    margin: 0;
+}
+
+.block-type-heading h2 {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.block-editor-mode {
+    padding-bottom: 50vh;
+    /* Allow scrolling past bottom */
+}

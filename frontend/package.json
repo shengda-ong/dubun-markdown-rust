@@ -1,0 +1,11 @@
+{
+    "name": "dubun-frontend",
+    "version": "1.0.0",
+    "description": "Frontend for Dubun Markdown Editor",
+    "type": "module",
+    "scripts": {
+        "test": "node --test tests/"
+    },
+    "author": "",
+    "license": "ISC"
+}

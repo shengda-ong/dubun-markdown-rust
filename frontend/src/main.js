@@ -1,6 +1,7 @@
 import { initDebugLogger } from './utils/debugLogger.js';
 import { loadView } from './utils/viewLoader.js';
 import { cleanEditorContent } from './utils/editorUtils.js';
+import { EditorView } from './views/editor_view.js';
 
 
 // Uncomment to enable on-screen debugging
@@ -21,7 +22,8 @@ async function initTauri() {
 }
 
 let welcomeView;
-let editorView;
+let editorView; // This is the DOM element
+let editorViewInstance; // This is the class instance
 
 async function initApp() {
   const appContainer = document.getElementById("app-container");
@@ -32,6 +34,10 @@ async function initApp() {
   try {
     welcomeView = await loadView("welcome");
     editorView = await loadView("editor");
+
+    // Initialize Editor Logic
+    editorViewInstance = new EditorView();
+    editorViewInstance.init(editorView);
 
     // FIX: white flash for some OS WebView Initialization Lag
     if (appWindow) {
