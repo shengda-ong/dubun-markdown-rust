@@ -60,11 +60,15 @@
 }
 
 /* Placeholder for empty blocks */
+/* Placeholder for empty blocks */
+.block-editor:empty::before,
 .block-preview:empty::before {
-    content: 'Type / for commands';
+    content: 'Type here... (Press Shift+Enter for new block)';
     color: #666;
     font-style: italic;
     opacity: 0.6;
+    pointer-events: none;
+    /* Click through to editor */
 }
 
 .block-type-heading h1 {

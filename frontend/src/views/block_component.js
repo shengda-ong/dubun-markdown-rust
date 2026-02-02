@@ -26,8 +26,6 @@ export class BlockComponent {
         this.previewElement.tabIndex = 0; // Enable focus for Navigation Mode
 
         // Edit Mode (Hidden initially)
-        // We use a div with contenteditable for seamless auto-resize, 
-        // effectively acting as a textarea but cleaner in DOM.
         this.editorElement = document.createElement('div');
         this.editorElement.className = `block-editor block-type-${this.block.type}`;
         this.editorElement.contentEditable = true;
@@ -62,8 +60,6 @@ export class BlockComponent {
         });
 
         this.editorElement.addEventListener('input', (e) => {
-            // Optional: realtime update state? 
-            // Usually wait for blur or debounce, but for "Editor" we might want sync.
         });
 
         this.element.appendChild(this.previewElement);
@@ -90,11 +86,8 @@ export class BlockComponent {
     }
 
     saveContent() {
-        // Get raw text from contenteditable
         if (this.editorElement) {
-            // CRITICAL: Trim surrounding whitespace/newlines. 
-            // Browsers often add invisible \n at start/end of contenteditable.
-            // This causes offset mismatches (Visual vs Model).
+            // Trim hidden characters (like \n) added by browsers in contenteditable
             this.block.content = this.editorElement.innerText.trim();
         }
         if (this.callbacks.onUpdate) {

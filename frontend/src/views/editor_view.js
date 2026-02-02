@@ -91,181 +91,181 @@ export class EditorView {
     handleKeyDown(e, blockId, component) {
         // Debugging Key Events for User
         const command = determineCommand(e);
-        console.log(`Key: ${e.key}, Shift: ${e.shiftKey}, Ctrl: ${e.ctrlKey}, Command: ${command}`);
 
-        if (command === COMMANDS.NEW_BLOCK) {
-            e.preventDefault();
+        switch (command) {
+            case COMMANDS.NEW_BLOCK:
+                this.handleNewBlock(e, blockId, component);
+                break;
+            case COMMANDS.MERGE_BLOCK:
+                this.handleMergeBlock(e, blockId, component);
+                break;
+            case COMMANDS.EXIT_EDIT_MODE:
+                this.handleExitEditMode(e, blockId, component);
+                break;
+            case COMMANDS.DELETE_BLOCK:
+                this.handleDeleteBlock(e, blockId, component);
+                break;
+            case COMMANDS.NAV_UP:
+                this.handleNavigation(e, blockId, -1);
+                break;
+            case COMMANDS.NAV_DOWN:
+                this.handleNavigation(e, blockId, 1);
+                break;
+            case COMMANDS.ENTER:
+                this.handleEnter(e, blockId, component);
+                break;
+            default:
+                break;
+        }
+    }
 
-            // Save current content first
-            component.saveContent();
+    /* --- Command Handlers --- */
 
-            // Check for split vs new block
+    handleNewBlock(e, blockId, component) {
+        e.preventDefault();
+        component.saveContent(); // Save state before splitting
+
+        const selection = window.getSelection();
+        let newBlock;
+
+        // Split if editing mid-text, otherwise append new empty block
+        if (component.isEditing && selection.rangeCount > 0) {
+            const offset = component.getCaretOffset();
+            newBlock = this.blockManager.splitBlock(blockId, offset);
+
+            component.editorElement.innerText = component.block.content; // Update view
+            component.switchToPreview();
+            component.switchToEdit();
+        } else {
+            newBlock = this.blockManager.addBlock('paragraph', '', blockId);
+        }
+
+        const index = this.blockManager.getBlockIndex(newBlock.id);
+        const newComp = this.insertBlockComponent(newBlock, index);
+
+        setTimeout(() => newComp.focusAtStart(), 10);
+    }
+
+    handleMergeBlock(e, blockId, component) {
+        if (component.isEditing) {
             const selection = window.getSelection();
-            let newBlock;
-
-            // If editing and we have a valid selection offset
-            if (component.isEditing && selection.rangeCount > 0) {
-                const offset = component.getCaretOffset();
-                newBlock = this.blockManager.splitBlock(blockId, offset);
-
-                // Update current block View (it was truncated)
-                component.editorElement.innerText = component.block.content;
-                component.switchToPreview();
-                component.switchToEdit(); // Update view
-            } else {
-                newBlock = this.blockManager.addBlock('paragraph', '', blockId);
+            // Merge into previous block if cursor is at the start
+            if (selection.anchorOffset === 0 && selection.isCollapsed) {
+                this._performMerge(e, blockId, component);
             }
+        }
+    }
 
-            const index = this.blockManager.getBlockIndex(newBlock.id);
-            const newComp = this.insertBlockComponent(newBlock, index);
-
-            setTimeout(() => newComp.focusAtStart(), 10);
-
-        } else if (command === COMMANDS.MERGE_BLOCK) {
-            // Only merge if we are editing and at the start
-            if (component.isEditing) {
-                const selection = window.getSelection();
-                console.log(`Merge Check: Offset=${selection.anchorOffset}, Collapsed=${selection.isCollapsed}, Type=${selection.type}`);
-
-                // Basic check if cursor is at start (offset 0)
-                if (selection.anchorOffset === 0 && selection.isCollapsed) {
-                    const index = this.blockManager.getBlockIndex(blockId);
-                    if (index > 0) {
-                        e.preventDefault();
-                        const prevBlock = this.blockManager.getAllBlocks()[index - 1];
-
-                        // CRITICAL: Save current content before merging so we don't lose the text!
-                        component.saveContent();
-
-                        const prevLength = prevBlock.content.length; // Store length before merge
-
-                        // Merge in data
-                        this.blockManager.mergeBlocks(prevBlock.id, blockId);
-
-                        // Update View
-                        component.element.remove();
-                        this.components.delete(blockId);
-
-                        const prevComp = this.components.get(prevBlock.id);
-
-                        // CRITICAL: Update the DOM element to reflect the merged model!
-                        prevComp.editorElement.innerText = prevBlock.content;
-
-                        prevComp.switchToPreview(); // Refresh content
-                        prevComp.switchToEdit();   // Go back to edit
-
-                        // Set cursor to join point
-                        setTimeout(() => {
-                            const range = document.createRange();
-                            const sel = window.getSelection();
-                            const textNode = prevComp.editorElement.firstChild;
-                            if (textNode) {
-                                try {
-                                    range.setStart(textNode, prevLength);
-                                    range.collapse(true);
-                                    sel.removeAllRanges();
-                                    sel.addRange(range);
-                                } catch (err) {
-                                    console.warn("Cursor set failed", err);
-                                    prevComp.focusAtEnd(); // Fallback
-                                }
-                            } else {
-                                prevComp.focusAtEnd();
-                            }
-                        }, 0);
-                    }
-                }
-            }
-        } else if (command === COMMANDS.EXIT_EDIT_MODE) {
+    /**
+     * Shared merge logic
+     */
+    _performMerge(e, blockId, component) {
+        const index = this.blockManager.getBlockIndex(blockId);
+        if (index > 0) {
             e.preventDefault();
-            component.focusPreview(); // Switch to "Navigation Mode"
+            const prevBlock = this.blockManager.getAllBlocks()[index - 1];
 
-        } else if (command === COMMANDS.DELETE_BLOCK) {
-            // Only delete if NOT editing (Navigation Mode)
-            if (!component.isEditing) {
-                e.preventDefault();
-                const index = this.blockManager.getBlockIndex(blockId);
-                this.blockManager.deleteBlock(blockId);
+            // CRITICAL: Save current content
+            component.saveContent();
+            const prevLength = prevBlock.content.length;
 
-                component.element.remove();
-                this.components.delete(blockId);
+            // Merge
+            this.blockManager.mergeBlocks(prevBlock.id, blockId);
 
-                // Focus next or prev
-                const blocks = this.blockManager.getAllBlocks();
-                if (blocks.length > 0) {
-                    // Try same index (next block moved up)
-                    let nextBlock = blocks[index] || blocks[index - 1]; // Logic for "next" or "prev" if at end
+            // Update Logic
+            component.element.remove();
+            this.components.delete(blockId);
 
-                    if (nextBlock) {
-                        let nextComp = this.components.get(nextBlock.id);
+            const prevComp = this.components.get(prevBlock.id);
+            prevComp.editorElement.innerText = prevBlock.content; // Sync DOM
+            prevComp.switchToPreview();
+            prevComp.switchToEdit();
 
-                        // Fix: If manager auto-generated a new block (e.g. we deleted the last one),
-                        // it won't have a component yet. We must render it.
-                        // Fix: If manager auto-generated a new block (e.g. we deleted the last one),
-                        // it won't have a component yet. We must render it.
-                        if (!nextComp) {
-                            // If it's the only block, append it. 
-                            this.renderBlock(nextBlock);
-                            nextComp = this.components.get(nextBlock.id);
+            // Restore Cursor
+            setTimeout(() => {
+                this._setCursor(prevComp, prevLength);
+            }, 0);
+        }
+    }
 
-                            // CRITICAL: If we regenerated the block (editor was empty), 
-                            // we should go straight to Edit Mode so user can type.
-                            if (nextComp) {
-                                nextComp.focusAtStart();
-                            }
-                        } else {
-                            // Existing block, just navigate to it
-                            nextComp.focusPreview();
-                        }
-                    }
+    handleExitEditMode(e, blockId, component) {
+        e.preventDefault();
+        component.focusPreview();
+    }
+
+    handleDeleteBlock(e, blockId, component) {
+        // Only delete if NOT editing
+        if (!component.isEditing) {
+            e.preventDefault();
+            this._deleteBlockAndFocus(blockId, component);
+        }
+    }
+
+    handleNavigation(e, blockId, direction) {
+        // direction: -1 (UP), 1 (DOWN)
+        const index = this.blockManager.getBlockIndex(blockId);
+        const blocks = this.blockManager.getAllBlocks();
+        const targetIndex = index + direction;
+
+        if (targetIndex >= 0 && targetIndex < blocks.length) {
+            e.preventDefault();
+            const targetBlock = blocks[targetIndex];
+            const targetComp = this.components.get(targetBlock.id);
+
+            if (direction === -1) targetComp.focusAtEnd();
+            else targetComp.focusAtStart();
+        }
+    }
+
+    handleEnter(e, blockId, component) {
+        if (!component.isEditing) {
+            e.preventDefault();
+            component.focusAtEnd();
+        }
+    }
+
+    /* --- Helpers --- */
+
+    _deleteBlockAndFocus(blockId, component) {
+        const index = this.blockManager.getBlockIndex(blockId);
+        this.blockManager.deleteBlock(blockId);
+
+        component.element.remove();
+        this.components.delete(blockId);
+
+        // Focus next or prev
+        const blocks = this.blockManager.getAllBlocks();
+        if (blocks.length > 0) {
+            let nextBlock = blocks[index] || blocks[index - 1];
+            if (nextBlock) {
+                let nextComp = this.components.get(nextBlock.id);
+                // If new block was auto-generated by manager
+                if (!nextComp) {
+                    this.renderBlock(nextBlock);
+                    nextComp = this.components.get(nextBlock.id);
+                    if (nextComp) nextComp.focusAtStart();
+                } else {
+                    nextComp.focusPreview();
                 }
             }
-        } else if (command === COMMANDS.NAV_UP) {
-            // Logic for NAV_UP (check index etc)
-            const index = this.blockManager.getBlockIndex(blockId);
-            if (index > 0) {
-                e.preventDefault(); // Prevent default if we are handling nav
-                const prev = this.blockManager.getAllBlocks()[index - 1];
-                this.components.get(prev.id).focusAtEnd();
-            }
-        } else if (command === COMMANDS.NAV_DOWN) {
-            const index = this.blockManager.getBlockIndex(blockId);
-            const blocks = this.blockManager.getAllBlocks();
-            if (index < blocks.length - 1) {
-                e.preventDefault();
-                const next = blocks[index + 1];
-                this.components.get(next.id).focusAtStart();
-            }
-        } else if (e.key === 'Backspace' && component.editorElement.innerText === '') {
-            // Special case: Backspace still needs context check (empty text)
-            // So we keep this check here or move it to determineCommand if we passed text 
-            // but `determineCommand` is pure keyLogic currently.
+        }
+    }
 
-            const blocks = this.blockManager.getAllBlocks();
-            if (blocks.length > 1) {
-                e.preventDefault();
-                const index = this.blockManager.getBlockIndex(blockId);
-                this.blockManager.deleteBlock(blockId);
-
-                component.element.remove();
-                this.components.delete(blockId);
-
-                if (index - 1 >= 0) {
-                    // Logic to focus previous block
-                    const prev = this.blockManager.getAllBlocks()[index - 1];
-                    // Note: blocks array was modified by deleteBlock, so we re-fetch or calc logic carefully.
-                    // block_manager.deleteBlock acts in-place on this.blocks.
-                    // If we removed item at `index`, then item at `index-1` is still at `index-1`.
-                    this.components.get(prev.id).focusAtEnd();
-                }
-            }
-        } else if (command === COMMANDS.ENTER) {
-            // If in Navigation Mode (preview focused), Enter should switch to Edit Mode
-            if (!component.isEditing) {
-                e.preventDefault(); // Stop default (which might do nothing on div, but good practice)
+    _setCursor(component, offset) {
+        const range = document.createRange();
+        const sel = window.getSelection();
+        const textNode = component.editorElement.firstChild;
+        if (textNode) {
+            try {
+                range.setStart(textNode, offset);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } catch (err) {
                 component.focusAtEnd();
             }
-            // If isEditing, do nothing (allow default contenteditable Enter = new line)
+        } else {
+            component.focusAtEnd();
         }
     }
 }

@@ -48,8 +48,7 @@ export class BlockManager {
         const index = this.blocks.findIndex(b => b.id === id);
         if (index !== -1) {
             this.blocks.splice(index, 1);
-            // Ensure there's always at least one block? 
-            // Maybe not strictly required by core, but good practice for editor
+            // Ensure at least one block remains
             if (this.blocks.length === 0) {
                 this.addBlock('paragraph', '');
             }
@@ -72,29 +71,35 @@ export class BlockManager {
             const prevBlock = this.blocks[prevIndex];
             const currBlock = this.blocks[currIndex];
 
-            console.log(`Merging: Prev='${prevBlock.content}', Curr='${currBlock.content}'`);
-
-            // Fix: contenteditable often leaves trailing \n. Trim it for cleaner merge.
-            let safePrevContent = prevBlock.content.replace(/\n+$/, '');
-
-            // Add a space if we are merging two non-empty text blocks (and prev doesn't already end in space)
-            if (safePrevContent.length > 0 && currBlock.content.length > 0) {
-                // Check if we need a space
-                if (!safePrevContent.endsWith(' ')) {
-                    safePrevContent += ' ';
-                }
-                prevBlock.content = safePrevContent + currBlock.content;
-            } else {
-                // If one was empty, just join (using the original maybe? No, safer to use trimmed)
-                // Actually if prev was JUST \n, safePrev is empty.
-                prevBlock.content = safePrevContent + currBlock.content;
-            }
+            // Update previous block's content
+            prevBlock.content = this.computeMergedContent(prevBlock.content, currBlock.content);
 
             // Remove current
             this.blocks.splice(currIndex, 1);
             return prevBlock.content;
         }
         return null;
+    }
+
+    /**
+     * Helper to compute the result of merging two block contents.
+     * Handles newline trimming and smart spacing.
+     * @param {string} prevContent 
+     * @param {string} currContent 
+     * @returns {string}
+     */
+    computeMergedContent(prevContent, currContent) {
+        // Trim trailing newlines from previous content
+        let safePrevContent = prevContent.replace(/\n+$/, '');
+
+        // Add a space if we are merging two non-empty text blocks
+        if (safePrevContent.length > 0 && currContent.length > 0) {
+            if (!safePrevContent.endsWith(' ')) {
+                safePrevContent += ' ';
+            }
+        }
+
+        return safePrevContent + currContent;
     }
 
     /**
@@ -110,7 +115,7 @@ export class BlockManager {
             const content = block.content;
 
             const left = content.slice(0, cursorIndex);
-            const right = content.slice(cursorIndex);
+            const right = content.slice(cursorIndex).trimStart();
 
             block.content = left;
 

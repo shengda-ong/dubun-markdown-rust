@@ -139,4 +139,49 @@ describe('Bug Regressions', () => {
         assert.strictEqual(blocks[0].content, 'Hello ');
         assert.strictEqual(blocks[1].content, 'World');
     });
+
+    it('Scenario: Backspace on empty block should delete it', () => {
+        const b1 = view.blockManager.addBlock('paragraph', 'One');
+        const b2 = view.blockManager.addBlock('paragraph', ''); // Empty
+        view.render();
+
+        const comp2 = view.components.get(b2.id);
+        comp2.isEditing = true;
+        // Mock empty content
+        comp2.editorElement.innerText = '';
+
+        // Mock cursor at 0
+        global.window.getSelection = () => ({
+            anchorOffset: 0,
+            isCollapsed: true,
+            rangeCount: 1,
+            type: 'Caret',
+            removeAllRanges: () => { },
+            addRange: () => { }
+        });
+
+        const event = new KeyboardEvent('keydown', { key: 'Backspace' });
+        view.handleKeyDown(event, b2.id, comp2);
+
+        assert.strictEqual(view.blockManager.blocks.length, 1, 'Should have deleted the empty block');
+        assert.strictEqual(view.blockManager.blocks[0].id, b1.id);
+    });
+
+    it('Scenario: Should trim leading whitespace in new block on split', () => {
+        const b1 = view.blockManager.addBlock('paragraph', 'Hello World');
+        view.render();
+        const comp = view.components.get(b1.id);
+        comp.isEditing = true;
+
+        // Split at index 5 (before " World")
+        // "Hello| World" -> Left="Hello", Right=" World" -> Trimmed="World"
+        comp.getCaretOffset = () => 5;
+
+        const event = new KeyboardEvent('keydown', { key: 'Enter', shiftKey: true });
+        view.handleKeyDown(event, b1.id, comp);
+
+        const blocks = view.blockManager.getAllBlocks();
+        assert.strictEqual(blocks[0].content, 'Hello');
+        assert.strictEqual(blocks[1].content, 'World', 'Leading space should be removed');
+    });
 });
