@@ -1,0 +1,22 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@tauri-apps/api": "^2.9.1",
+    "@tauri-apps/plugin-dialog": "^2.6.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.9.6"
+  }
+}

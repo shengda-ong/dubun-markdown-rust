@@ -11,7 +11,7 @@ export async function loadView(viewName) {
 
     try {
         // 1. Fetch HTML
-        const response = await fetch(`views/${viewName}.html`);
+        const response = await fetch(`views/${viewName}/index.html`);
         if (!response.ok) {
             throw new Error(`Failed to fetch view '${viewName}': Status ${response.status} ${response.statusText}`);
         }
@@ -39,10 +39,10 @@ export async function loadView(viewName) {
         console.log(`Injected ${viewName} into DOM`);
 
         // 4. Load CSS (if not already loaded)
-        if (!document.querySelector(`link[href="views/${viewName}.css"]`)) {
+        if (!document.querySelector(`link[href="views/${viewName}/styles.css"]`)) {
             const link = document.createElement("link");
             link.rel = "stylesheet";
-            link.href = `views/${viewName}.css`;
+            link.href = `views/${viewName}/styles.css`;
             document.head.appendChild(link);
         }
 

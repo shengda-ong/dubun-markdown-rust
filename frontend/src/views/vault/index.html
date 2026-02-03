@@ -1,0 +1,180 @@
+<div class="view vault-view" id="vault-view">
+    <!-- Main content -->
+    <main class="vault-main">
+        <div class="vault-container">
+            <!-- Hero section -->
+            <div class="vault-hero">
+                <div class="vault-hero-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                    </svg>
+                </div>
+                <h1>Welcome to Dubun</h1>
+                <p>Your personal space for notes and ideas. Select a vault to continue.</p>
+            </div>
+
+            <!-- Toast notification (hidden by default) -->
+            <div class="vault-toast" id="vault-toast" style="display: none;">
+                <span id="vault-toast-message"></span>
+            </div>
+
+            <!-- Create vault form (hidden by default) -->
+            <div class="vault-create-form" id="vault-create-form" style="display: none;">
+                <div class="vault-create-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                    </svg>
+                    <span>Create a new vault</span>
+                </div>
+
+                <input type="text" class="vault-name-input" id="vault-name-input" placeholder="My Notes" autocomplete="off">
+
+                <!-- Storage location section -->
+                <div class="vault-storage">
+                    <div class="vault-storage-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                            <path d="M3 5v14a9 3 0 0 0 18 0V5"/>
+                            <path d="M3 12a9 3 0 0 0 18 0"/>
+                        </svg>
+                        <span>Storage location</span>
+                    </div>
+                    <div class="vault-storage-picker">
+                        <span class="vault-storage-path" id="vault-storage-path">Default location</span>
+                        <button class="vault-storage-btn" id="vault-choose-folder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                            <span id="vault-choose-folder-text">Choose</span>
+                        </button>
+                    </div>
+                    <button class="vault-storage-reset" id="vault-storage-reset" style="display: none;">
+                        Use default location instead
+                    </button>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="vault-create-actions">
+                    <button class="vault-btn-primary" id="vault-create-btn" disabled>Create</button>
+                    <button class="vault-btn-secondary" id="vault-cancel-btn">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Vault list section -->
+            <div class="vault-list-section" id="vault-list-section" style="display: none;">
+                <div class="vault-list-header">
+                    <h2>Your vaults</h2>
+                    <button class="vault-new-btn" id="vault-new-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"/>
+                            <path d="M12 5v14"/>
+                        </svg>
+                        <span>New</span>
+                    </button>
+                </div>
+                <div class="vault-list" id="vault-list">
+                    <!-- Vault cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Empty state -->
+            <div class="vault-empty" id="vault-empty" style="display: none;">
+                <div class="vault-empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                    </svg>
+                </div>
+                <h3>Create your first vault</h3>
+                <p>Vaults are collections of your notes. Each vault lives as a folder on your computer.</p>
+                <button class="vault-empty-btn" id="vault-empty-create-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"/>
+                        <path d="M12 5v14"/>
+                    </svg>
+                    <span>Create vault</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="vault-footer">
+        <p>Your notes are stored locally on your device.</p>
+    </footer>
+
+    <!-- Health Check Modal (shown on startup if broken vaults detected) -->
+    <div class="vault-modal-overlay" id="vault-health-modal" style="display: none;">
+        <div class="vault-modal vault-health-modal">
+            <div class="vault-modal-icon health">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+            </div>
+            <h3 id="vault-health-title">Vault Health Check</h3>
+            <p id="vault-health-message">Checking your vaults...</p>
+
+            <!-- Health status summary -->
+            <div class="vault-health-summary" id="vault-health-summary" style="display: none;">
+                <div class="health-stat healthy">
+                    <span class="stat-count" id="health-count-healthy">0</span>
+                    <span class="stat-label">Healthy</span>
+                </div>
+                <div class="health-stat broken">
+                    <span class="stat-count" id="health-count-broken">0</span>
+                    <span class="stat-label">Broken</span>
+                </div>
+            </div>
+
+            <!-- Broken vaults list -->
+            <div class="vault-health-list" id="vault-health-list" style="display: none;">
+                <!-- Broken vault items will be inserted here -->
+            </div>
+
+            <!-- Progress indicator -->
+            <div class="vault-health-progress" id="vault-health-progress">
+                <div class="progress-spinner"></div>
+                <span>Scanning vaults...</span>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="vault-health-actions" id="vault-health-actions" style="display: none;">
+                <button class="vault-btn-danger" id="vault-health-cleanup">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"/>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                    <span>Clean up broken vaults</span>
+                </button>
+                <button class="vault-modal-cancel" id="vault-health-dismiss">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete confirmation modal (hidden by default) -->
+    <div class="vault-modal-overlay" id="vault-delete-modal" style="display: none;">
+        <div class="vault-modal">
+            <div class="vault-modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                    <path d="M12 9v4"/>
+                    <path d="M12 17h.01"/>
+                </svg>
+            </div>
+            <h3 id="vault-delete-modal-title">Delete vault?</h3>
+            <p id="vault-delete-modal-message">How would you like to remove this vault?</p>
+            <div class="vault-modal-options" id="vault-modal-options">
+                <button class="vault-modal-option keep" id="vault-delete-keep">
+                    <div class="option-title">Remove from Dubun</div>
+                    <div class="option-desc">Keep files on disk</div>
+                </button>
+                <button class="vault-modal-option delete" id="vault-delete-files">
+                    <div class="option-title">Delete permanently</div>
+                    <div class="option-desc">Remove vault and delete all files</div>
+                </button>
+            </div>
+            <button class="vault-modal-cancel" id="vault-delete-cancel">Cancel</button>
+        </div>
+    </div>
+</div>
